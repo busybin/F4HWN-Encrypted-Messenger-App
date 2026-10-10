@@ -1,6 +1,6 @@
 # SECMSG — encrypted messenger overlay App for the F4HWN 8K firmware
 
-A single-file overlay App (`secmsg_v24.c`) for the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)**
+A single-file overlay App for the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)**
 running F4HWN firmware **with the 8 KiB overlay window**: short encrypted messages over the
 BK4819 FSK modem, keyed by an 8-digit PIN, with delivery receipts and a 43-message history.
 

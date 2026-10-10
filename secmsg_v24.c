@@ -89,8 +89,8 @@ static const char POPUPS[4][6] = {"BUSY","FULL","TXOFF","EXIT?"};
 /* F+1..9 prosigns (same set as the CW app), packed into one blob with byte
  * offsets. Offset 0 points at the leading NUL, so unassigned keys insert
  * nothing and no 0xFF sentinel branch is needed. */
-static const char PROSIGN_ALL[] = "\0" "CQ\0" "COPY\0" "73\0" "TEST\0" "SOS";
-static const uint8_t PROSIGN_OFF[10] = {0u, 1u, 4u, 9u, 0u, 12u, 0u, 0u, 0u, 17u};
+static const char PROSIGN_ALL[] = "\0" "CQ\0" "DE\0" "UR\0" "RST\0" "R\0" "TU\0" "73\0" "AR\0" "SK\0";
+static const uint8_t PROSIGN_OFF[10] = {0u, 1u, 4u, 7u, 10u, 14u, 16u, 19u, 22u, 25u};
 
 /* Big-endian numeric forms of the fixed protocol labels. */
 #define KDF_LABEL0 0x534D32004B444631ULL

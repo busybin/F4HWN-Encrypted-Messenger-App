@@ -9,8 +9,8 @@ set -euo pipefail
 
 APP="secmsg"
 SRC="secmsg_v24.c"
-APP_NAME="SECMSG V24"
-APP_VER="24"
+APP_NAME="SECMSG V25"
+APP_VER="25"
 APP_API_MIN=2                            # needs API level 2 (uid_get) from the 8K firmware
 APP_MAX=8192                             # 8 KiB overlay window (code+bss)
 APP_VMA="${APP_VMA:-0x20000280}"         # firmware __mb_workspace_start
