@@ -4,6 +4,8 @@ A single-file overlay App for the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)**
 running F4HWN firmware **with the 8 KiB overlay window**: short encrypted messages over the
 BK4819 FSK modem, keyed by an 8-digit PIN, with delivery receipts and a 43-message history.
 
+![SECMSG running on the radio — deriving the session key (LOADING)](screenshots/secmsg.png)
+
 > **⚠️ This App requires the F4HWN firmware with the 8 KiB overlay window.**
 > It is linked for `code+bss ≤ 8192 B` and uses API level 2 (`uid_get`, offset 276), which only
 > the 8K fork provides. On the stock 4 KiB firmware it **crashes on start** (its `.bss` overruns
