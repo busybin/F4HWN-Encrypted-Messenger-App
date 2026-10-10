@@ -3,6 +3,7 @@
 *.bin
 *.map
 *.app
+*.app.zip
 __pycache__/
 # never publish session memory
 MEMORY.md
