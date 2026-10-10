@@ -70,7 +70,9 @@ This is a hobby implementation, not a vetted cryptosystem:
 | `UP` / `DOWN` | scroll the message box (clamped at both ends) |
 | `MENU` | settings page (PIN / ID / ACK rows; `UP`/`DOWN` select, `MENU` edits, `EXIT` saves) |
 | `EXIT` | press twice within 1.5 s to leave (config saved on exit) |
-| `0`–`9` | text input, or PIN editing inside the panels |
+| `0`–`9` | multitap text input (and PIN digits inside the PIN panel) |
+| `0` | backspace — delete the last character (message / ID input) |
+| `*` | space (message / ID input); **clears the whole PIN entry** in the PIN panel |
 | `F` short | latch — `F+0` opens the PIN panel |
 | `F` double | clear compose buffer + message box |
 
@@ -85,6 +87,29 @@ This is a hobby implementation, not a vetted cryptosystem:
 4. Radio → Apps menu → **SECMSG**, then `F+0` and enter an 8-digit PIN on both radios.
 
 Both radios need the same channel, the same offset setting and the same PIN.
+
+## How to use
+
+**1. Set the PIN first — on both radios.**
+- Open the PIN panel: `F+0` (or `MENU` → the PIN row → `MENU`).
+- Type the 8 digits with `0`–`9`; digits are appended one by one.
+- **`*` clears the whole entry.** There is **no single-character delete** — to fix a typo press
+  `*` and retype from the start.
+- `MENU` confirms the row; `EXIT` saves and leaves.
+- **Both radios must use the same 8-digit PIN** (same channel, same offset).
+- With a PIN set, every launch re-derives the session key in the background and shows
+  **`LOADING NN%`** for a few seconds (input is locked meanwhile). **With no PIN set there is no
+  derivation and no `LOADING` line** — set the PIN first, then it appears.
+
+**2. Compose and send.**
+- Compose with `0`–`9` (multitap — e.g. tap `2` repeatedly for `A`/`B`/`C`/`2`).
+- `0` = **backspace** (delete the last character); `*` = **space**.
+- `PTT` sends (needs a full PIN and a non-empty buffer, else `BUSY`).
+
+**3. Read the result.**
+- Received text is bold; sent text is prefixed `TX `.
+- The delivery receipt arrives ~1.5 s after a clean send: `✓` = received, `✗` = timed out,
+  `N` = frame truncated / chip CRC failed.
 
 ## Building
 
