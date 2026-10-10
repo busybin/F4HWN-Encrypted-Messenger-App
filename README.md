@@ -51,6 +51,14 @@ This is a hobby implementation, not a vetted cryptosystem:
 - **Message box** — received bold, sent normal with `TX ` prefix, 16-char wrapping,
   **43 messages of history** (needs the 8 KiB window; 1-pixel-per-row scroll indicator was
   dropped in favour of history depth), input row shows remaining characters.
+- **Prosigns** — `F` latch + digit inserts a prosign (same set as the CW App). Defaults:
+
+  | `F+1` | `F+2` | `F+3` | `F+4` | `F+5` | `F+6` | `F+7` | `F+8` | `F+9` |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | CQ | DE | UR | RST | R | TU | 73 | AR | SK |
+
+  Edit them **per radio** from the flasher page's **Prosigns** tab — it rewrites the table in
+  the installed App in place, no reinstall.
 - **Safety** — refuses to transmit when TX is disabled/battery low/offset differs; keeps the
   draft on TX refusal; drains a stuck key; re-arms the RX FIFO on any anomaly.
 
