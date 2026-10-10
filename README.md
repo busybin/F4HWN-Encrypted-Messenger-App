@@ -1,4 +1,4 @@
-# SECMSG V24 — encrypted messenger overlay App for F4HWN 8K firmware
+# SECMSG — encrypted messenger overlay App for the F4HWN 8K firmware
 
 A single-file overlay App (`secmsg_v24.c`) for the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)**
 running F4HWN firmware **with the 8 KiB overlay window**: short encrypted messages over the
@@ -69,11 +69,12 @@ This is a hobby implementation, not a vetted cryptosystem:
 ## Install
 
 1. Flash the **8K firmware** (link above).
-2. Build `SECMSGV24.app` (below) or download the prebuilt one from the
+2. Nothing to download if you use the flasher page below; otherwise run `./build.sh`
+   (see _Building_) or take the prebuilt package from the
    [latest release](https://github.com/busybin/F4HWN-Encrypted-Messenger-App/releases/latest).
 3. Install with [UVStudio](https://armel.github.io/uvstudio/) (or a local mirror) into any App
    slot — e.g. slot 2.
-4. Radio → Apps menu → **SECMSG V24**, then `F+0` and enter an 8-digit PIN on both radios.
+4. Radio → Apps menu → **SECMSG**, then `F+0` and enter an 8-digit PIN on both radios.
 
 Both radios need the same channel, the same offset setting and the same PIN.
 

@@ -1,4 +1,4 @@
-# NOTICE — SECMSG V24
+# NOTICE — SECMSG
 
 This product includes work derived from the projects below.
 
