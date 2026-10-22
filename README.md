@@ -18,7 +18,7 @@ Install everything from the 8K flasher page. Nothing to download here.
 
 Desktop Chrome / Edge / Opera (Web Serial), radio plugged into that computer.
 
-1. **Flash the 8K firmware** — *Flash Firmware* → **F4HWN Labs (8K fork) → v6.3.0+8K** →
+1. **Flash the 8K firmware** — *Flash Firmware* → **F4HWN Labs (8K fork) → v6.3.0 · 115 KB** →
    radio in **DFU mode** → *Flash firmware*.
 2. **Install this App** — *Apps* → *Application* **SECMSG** → *Target slot* → *Install app*.
 
