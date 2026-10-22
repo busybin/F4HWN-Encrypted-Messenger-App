@@ -11,11 +11,12 @@ BK4819 FSK modem, keyed by an 8-digit PIN, with delivery receipts and a 43-messa
 ![SECMSG running on the radio — deriving the session key (LOADING)](screenshots/secmsg.png)
 
 > **⚠️ This App requires the F4HWN firmware with the 8 KiB overlay window.**
-> It is linked for `code+bss ≤ 8192 B` and uses API level 2 (`uid_get`, offset 276), which only
-> the 8K fork provides. On the stock 4 KiB firmware it **crashes on start** (its `.bss` overruns
-> the stock workspace). Get the firmware here:
+> It is linked for `code+bss ≤ 8192 B` and declares **`api_min = 4`** (the 8K fork's API level:
+> upstream level 3 plus `uid_get` at offset 396). The loader refuses it on other firmware
+> (`APP_ERR_ABI`) instead of crashing, and on the stock 4 KiB firmware its `.bss` would overrun
+> the stock workspace anyway. Get the firmware here:
 > **[busybin/uv-k1-k5v3-firmware-f4hwn-8k](https://github.com/busybin/uv-k1-k5v3-firmware-f4hwn-8k)**
-> (on-screen version `F4HWN v6.1.0+8K`).
+> (on-screen version `F4HWN v6.3.0+8K`).
 
 ## ⚖️ Legal notice — read before use
 
@@ -123,7 +124,13 @@ Both radios need the same channel, the same offset setting and the same PIN.
 ./build.sh            # needs arm-none-eabi-gcc 13.x on PATH (or TC=/path/to/bin)
 ```
 
-Budget: **code 6812 B + bss 1356 B = 8168 / 8192 B** of the overlay window.
+Budget: **code 6820 B + bss 1356 B = 8176 / 8192 B** of the overlay window.
+
+Version 26 follows the v6.3.0 firmware: `uid_get()` moved from offset 276 to 396 (an older
+package would read the wrong table entry, so V25 must be replaced), the screen is drawn with
+`blit_page(8)` so no blocking K5Viewer frame runs while a message is decoded (the viewer is fed
+from the idle loop), and the frequency/PIN formatting uses the resident `append_u32` and
+`uidivmod` services instead of a repeated-subtraction divider.
 
 ## Host test suite
 
@@ -134,7 +141,8 @@ behaviour is testable without a radio:
 for f in tests/*.c; do gcc -O1 -o /tmp/secmsg_test "$f" && /tmp/secmsg_test || echo "FAIL $f"; done
 ```
 
-Twelve suites: crypto (NSA KAT / CTR / MAC tamper / KDF avalanche), end-to-end packet
+Twelve suites (the prosign suite follows the current CQ/DE/UR/RST/R/TU/73/AR/SK table):
+crypto (NSA KAT / CTR / MAC tamper / KDF avalanche), end-to-end packet
 build+parse, ACK timing, receipt counters, input lock during key derivation, menu editing,
 layout, scrolling, prosigns, session/state and vectors. Add `-fsanitize=address,undefined`
 for the sanitizer run used during development.

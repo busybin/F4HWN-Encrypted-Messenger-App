@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     memset(&G, 0, sizeof(G));
 
     /* Keypad/multitap and length-delimited edit buffer. */
@@ -51,13 +52,13 @@ int main(void)
 
     /* Decimal display/PIN unpacking must terminate on non-multiples of ten. */
     char n[12];
-    pnum(n, 0u, 1);
+    pz(n, 0u);
     if (strcmp(n, "0") != 0)
         return 9;
-    pnum(n, 32u, 1);
+    pz(n, 32u);
     if (strcmp(n, "32") != 0)
         return 9;
-    pnum(n, 10032u, 1);
+    pz(n, 10032u);
     if (strcmp(n, "10032") != 0)
         return 9;
     uint32_t pin = 12345678u;

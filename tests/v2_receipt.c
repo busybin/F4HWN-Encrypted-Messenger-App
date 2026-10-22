@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 static void set_local(const char *id, uint8_t suffix)
 {
@@ -14,7 +15,7 @@ static void set_local(const char *id, uint8_t suffix)
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     memset(&G, 0, sizeof(G));
     memcpy(G.pin, "12345678", 8);
     G.pinLen = PIN_LEN;

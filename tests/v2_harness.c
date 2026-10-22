@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Launch smoke test: run the real app_main loop against a minimal API surface
  * and make sure it starts, idles and exits via the two-press EXIT gesture. */
@@ -46,6 +47,7 @@ int main(void)
     api.rx_freq = freq_fn; api.tx_freq = freq_fn; api.tx_state = txstate_fn; api.nav_dir = nav_fn;
     api.tx_end = noop;
     api.uid_get = uid_fn; api.cfg_load = uid0_fn; api.cfg_save = save_fn; api.led = bool_fn; api.battery_sample = noop;
+    HOST_API_STUBS(api);
     app_main(&api);
     if (af_last != APP_AF_MUTE) { puts("HARNESS FAIL: idle AF not muted"); return 1; }
     puts("HARNESS PASS");

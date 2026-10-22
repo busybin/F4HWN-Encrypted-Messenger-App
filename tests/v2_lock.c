@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Input lock: while the key schedule is being derived the input box shows
  * LOADING and every key is swallowed - not just the first press. The lock is a
@@ -67,7 +68,7 @@ static void setup(app_api_t *api)
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
 
     /* Valid receiver config so app_main loads the PIN and runs the KDF. */
     memset(&G, 0, sizeof(G));
@@ -97,7 +98,7 @@ int main(void)
 
     memset(&G, 0, sizeof(G));
     setup(&api);
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     script = sc; script_len = n; script_pos = 0; key_calls = 0;
     app_main(&api);
 
@@ -146,7 +147,7 @@ int main(void)
         G.ackS = ACK_DEF;
         loadConfig();
         setup(&api);
-        A = &api;
+        A = &api; HOST_API_STUBS(api);
         script = sx; script_len = tail; script_pos = 0; key_calls = 0;
         app_main(&api);
         if (script_pos < 250u) return 11;   /* would have quit on the first press */

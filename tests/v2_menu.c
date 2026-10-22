@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Settings menu: three rows (PIN / ID / ACK). UP/DOWN picks the row, MENU
  * enters and stores the selected row's edit, then digits (PIN/ID) or UP/DOWN
@@ -35,7 +36,7 @@ static void draw_clear(void) { for (int i = 0; i < 7; i++) rows[i][0] = 0; }
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     memset(&G, 0, sizeof(G));
     api.print_normal = rec_normal;
     api.print_bold = rec_bold;

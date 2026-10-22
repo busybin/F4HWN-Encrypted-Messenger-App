@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* End-to-end receive -> receipt through the real app_main loop with a mocked
  * BK4819: the FIFO hands over a captured 72-byte frame, and we assert that
@@ -108,7 +109,7 @@ static void set_local(const char *id, uint8_t suffix)
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
 
     /* 1. Receiver config blob (valid magic+CRC so app_main loads the PIN). */
     memset(&G, 0, sizeof(G));
@@ -137,7 +138,7 @@ int main(void)
      *    transmits is captured out of the FIFO writes. */
     memset(&G, 0, sizeof(G));
     setup(&api);
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     capture_ack = 1;
     app_main(&api);
     capture_ack = 0;
@@ -164,7 +165,7 @@ int main(void)
     G.msgLen = 2;
     r5f_writes = 0; ack_words = 0;
     setup(&api);
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     sendMessage();
     if (!G.ackPending || r5f_writes != PK_WORDS) return 8;
     memcpy(G.pkt.word, recv_ack, sizeof(recv_ack));     /* peer's ACK comes back */

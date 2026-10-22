@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* F+1..9 prosigns through the real app_main loop: latch F (holdTick counts
  * fHoldMs while the key reads back as F), then press a digit; the prosign text
@@ -50,7 +51,7 @@ static void run(const uint8_t *keys, unsigned n)
 
     memset(&G, 0, sizeof(G));
     script = keys; script_len = n; script_pos = 0;
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     app_main(&api);
 }
 
@@ -59,33 +60,32 @@ static void run(const uint8_t *keys, unsigned n)
 
 int main(void)
 {
-    /* F held two ticks, released -> F_FDOWN; then F+2 = "COPY". */
-    static const uint8_t s_copy[] = {
+    /* F held two ticks, released -> F_FDOWN; then the prosign of that key.
+     * Table after the F4HWN reset: F+1 CQ F+2 DE F+3 UR F+4 RST F+5 R
+     * F+6 TU F+7 73 F+8 AR F+9 SK; F+0 is empty. */
+    static const uint8_t s_de[] = {
         F, F, F, F, F, I, 2, I, I, I, APP_KEY_EXIT, I, APP_KEY_EXIT, APP_KEY_EXIT, I, APP_KEY_EXIT,
     };
-    run(s_copy, sizeof(s_copy));
-    if (G.msgLen != 4u || memcmp(G.msg, "COPY", 4) != 0) return 1;
+    run(s_de, sizeof(s_de));
+    if (G.msgLen != 2u || memcmp(G.msg, "DE", 2) != 0) return 1;
 
-    /* F+9 = "SOS" appended to nothing else. */
-    static const uint8_t s_sos[] = {
+    static const uint8_t s_sk[] = {
         F, F, F, I, 9, I, I, I, APP_KEY_EXIT, I, APP_KEY_EXIT, APP_KEY_EXIT, I, APP_KEY_EXIT,
     };
-    run(s_sos, sizeof(s_sos));
-    if (G.msgLen != 3u || memcmp(G.msg, "SOS", 3) != 0) return 2;
+    run(s_sk, sizeof(s_sk));
+    if (G.msgLen != 2u || memcmp(G.msg, "SK", 2) != 0) return 2;
 
-    /* F+5 = "TEST" (same key as the CW app); F+6 is now empty. */
-    static const uint8_t s_test[] = {
+    static const uint8_t s_r[] = {
         F, F, F, I, 5, I, I, I, APP_KEY_EXIT, I, APP_KEY_EXIT, APP_KEY_EXIT, I, APP_KEY_EXIT,
     };
-    run(s_test, sizeof(s_test));
-    if (G.msgLen != 4u || memcmp(G.msg, "TEST", 4) != 0) return 4;
+    run(s_r, sizeof(s_r));
+    if (G.msgLen != 1u || G.msg[0] != 'R') return 4;
 
-    /* F+6 is empty in the table: latch clears, nothing appended. */
-    static const uint8_t s_none[] = {
-        F, F, F, I, 6, I, I, I, APP_KEY_EXIT, I, APP_KEY_EXIT, APP_KEY_EXIT, I, APP_KEY_EXIT,
+    static const uint8_t s_73[] = {
+        F, F, F, I, 7, I, I, I, APP_KEY_EXIT, I, APP_KEY_EXIT, APP_KEY_EXIT, I, APP_KEY_EXIT,
     };
-    run(s_none, sizeof(s_none));
-    if (G.msgLen != 0u) return 3;
+    run(s_73, sizeof(s_73));
+    if (G.msgLen != 2u || memcmp(G.msg, "73", 2) != 0) return 3;
 
     puts("SECMSG PROSIGN PASS");
     return 0;

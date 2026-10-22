@@ -146,22 +146,23 @@ static char *pstr(char *d, const char *s){
     return d;
 }
 
-/* One decimal digit: repeated subtraction keeps libgcc division out of the
- * image. UI values are tiny except the frequency fraction (<100000). */
+/* API level 2 resident division: quotient in the low word, remainder in the
+ * high word. The old repeated-subtraction loop cost up to 10000 iterations per
+ * frequency digit; this is one call, and no libgcc divide in the image. */
 static uint32_t div10(uint32_t n, uint8_t *rem){
-    uint32_t q = 0;
-    while(n >= 10u){ n -= 10u; q++; }
-    *rem = (uint8_t)n;
-    return q;
+    const uint64_t qr = A->uidivmod(n, 10u);
+    *rem = (uint8_t)(qr >> 32);
+    return (uint32_t)qr;
 }
 
-/* Decimal, optionally zero-padded on the left (pad = minimum digit count). The
- * frequency needs five decimals, so the pad path is not optional. */
-static char *pnum(char *d, uint32_t v, uint8_t pad){
-    char t[10]; uint8_t n = 0, r;
-    do { v = div10(v, &r); t[n++] = (char)('0' + r); } while(v);
-    while(n < pad) t[n++] = '0';
-    while(n--) *d++ = t[n];
+/* Unsigned decimal, no padding: the resident formatter, NUL-terminated. */
+static char *pz(char *d, uint32_t v){ d = A->append_u32(d, v); *d = 0; return d; }
+
+/* Exactly five zero-padded digits: the frequency fraction (0..99999). */
+static char *pfrac5(char *d, uint32_t v){
+    char t[5]; uint8_t r;
+    for(uint8_t i = 5; i--; ){ v = div10(v, &r); t[i] = (char)('0' + r); }
+    for(uint8_t i = 0; i < 5; i++) *d++ = t[i];
     *d = 0;
     return d;
 }
@@ -502,7 +503,10 @@ static void drawBox(void){
 __attribute__((noinline)) static void invertRow(uint8_t r){
     for(uint8_t x = 0; x < 128; x++) A->fb[r][x] ^= 0xFF;
 }
-static void blitAll(void){ A->blit_status(); A->blit_full(); }
+/* API level 3: blit_page(8) is the whole screen without the blocking K5Viewer
+ * frame that blit_full sends, which overran the 8K fork's stack with a viewer
+ * attached. The viewer is fed separately, from the idle loop. */
+static void blitAll(void){ A->blit_status(); A->blit_page(8); }
 
 static void chrome(void){
     A->display_clear(); A->status_clear();
@@ -525,7 +529,7 @@ static void drawPreview(void){
 /* Half-second value as "1.5" / "0.5" / "10.0"; shared by the ACK menu row and
  * the status row so the two can never disagree. */
 static inline __attribute__((always_inline)) char *pHalf(char *p, uint8_t halfsec){
-    p = pnum(p, (uint32_t)(halfsec >> 1), 1);
+    p = pz(p, (uint32_t)(halfsec >> 1));
     *p++ = '.'; *p++ = (halfsec & 1u) ? '5' : '0';
     return p;
 }
@@ -540,8 +544,8 @@ static void drawStatus(void){
     A->print_normal(b, 0, 0, ROW_ST);
     uint32_t hz = A->rx_freq(), whole = 0;
     while(hz >= 100000u){ hz -= 100000u; whole++; }
-    p = b; p = pnum(p, whole, 1);
-    *p++ = '.'; p = pnum(p, hz, 5);
+    p = b; p = pz(p, whole);
+    *p++ = '.'; p = pfrac5(p, hz);
     A->print_normal(b, (uint8_t)(126 - (p - b) * 7), 0, ROW_ST);
 }
 
@@ -577,7 +581,7 @@ static void draw(void){
     if(G.kdfLeft){                       /* key derivation: input box locked */
         uint32_t done = (uint32_t)KDF_ROUNDS - G.kdfLeft;
         A->print_normal("LOADING", 0, 0, ROW_IN);
-        q = r; q = pnum(q, (done * 100u) >> 16, 1); *q++ = '%'; *q = 0;
+        q = r; q = pz(q, (done * 100u) >> 16); *q++ = '%'; *q = 0;
         A->print_normal(r, (uint8_t)(126 - (q - r) * 7), 0, ROW_IN);
         invertRow(ROW_IN);
         drawStatus();
@@ -585,7 +589,7 @@ static void draw(void){
     }
     drawBox();
     uint8_t hint = (uint8_t)(MSG_MAX - G.msgLen);   /* msgLen is never > MSG_MAX */
-    q = r; *q++ = '('; q = pnum(q, hint, 1); *q++ = ')'; *q = 0;
+    q = r; *q++ = '('; q = pz(q, hint); *q++ = ')'; *q = 0;
     uint8_t maxc = (uint8_t)(MSG_MAX - 4u);   /* "(18)" reserves four cells */
     uint8_t st = (G.msgLen > (uint8_t)(maxc - 1u)) ? (uint8_t)(G.msgLen - (maxc - 1u)) : 0;
     uint8_t c = 0;
@@ -952,7 +956,10 @@ void app_main(const app_api_t *api){
         if(G.popT && --G.popT == 0){ G.pop = 0; drawAndBlit(); }
         if(++rxAcc >= BLINK_TICKS){ rxAcc = 0; G.blink ^= 1; drawAndBlit(); }
 
-        if(++G.batTimer >= BAT_TICKS){ G.batTimer = 0; A->battery_sample(); }
+        if(++G.batTimer >= BAT_TICKS){
+            G.batTimer = 0; A->battery_sample();
+            if(!G.fIdx && !G.kdfLeft) A->viewer_update();   /* mirror, ~2 s cadence */
+        }
         A->backlight_update();
         dly(LOOP_MS);   /* keep key/tap/KDF timers in real milliseconds */
     }

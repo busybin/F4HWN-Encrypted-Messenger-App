@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Screen layout, locked down so it cannot silently drift:
  *
@@ -54,7 +55,7 @@ static void noop(void) {}
 int main(void)
 {
     app_api_t api; memset(&api, 0, sizeof api);
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     api.fb = (app_fb_t)fb_mem;
     api.print_normal = rec; api.print_bold = rec_bold; api.print_inverse = rec_inv;
     api.rx_freq = freq_fn;

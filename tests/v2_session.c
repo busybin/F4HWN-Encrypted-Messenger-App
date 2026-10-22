@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Slim-build session semantics (no newSession rotation):
  * - PIN change re-derives the key, counters continue, peers keep working.
@@ -23,7 +24,7 @@ static void save_menu(void)
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     memset(&G, 0, sizeof(G));
     memcpy(G.id.localId, "ALICE", 5);
     G.id.localId[5] = 0;

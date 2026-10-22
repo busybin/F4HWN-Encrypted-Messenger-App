@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 static int hexeq(const uint8_t *p, const char *s, int n){
     for(int i=0;i<n;i++){ unsigned v; if(sscanf(s+2*i,"%2x",&v)!=1 || p[i]!=(uint8_t)v) return 0; }

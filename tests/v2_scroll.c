@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../secmsg_v24.c"
+#include "host_api.h"
 
 /* Directional scrolling of the message box: UP shows older entries, DOWN
  * shows newer ones, both ends clamp. Runs against the real drawBox() with a
@@ -59,7 +60,7 @@ static void show(uint8_t scroll, const char *tag)
 int main(void)
 {
     app_api_t api = {0};
-    A = &api;
+    A = &api; HOST_API_STUBS(api);
     memset(&G, 0, sizeof(G));
     api.fb = (app_fb_t)fbmem;
     api.print_normal = rec_normal;
