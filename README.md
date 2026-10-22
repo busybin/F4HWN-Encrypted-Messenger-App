@@ -4,19 +4,34 @@
   <a href="https://buymeacoffee.com/busybin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="56"></a>
 </p>
 
-A single-file overlay App for the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)**
-running F4HWN firmware **with the 8 KiB overlay window**: short encrypted messages over the
-BK4819 FSK modem, keyed by an 8-digit PIN, with delivery receipts and a 43-message history.
+Short encrypted messages over the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)** BK4819 FSK modem,
+keyed by an 8-digit PIN, with delivery receipts and a 43-message history — on F4HWN firmware
+**with the 8 KiB overlay window**.
 
 ![SECMSG running on the radio — deriving the session key (LOADING)](screenshots/secmsg.png)
 
-> **⚠️ This App requires the F4HWN firmware with the 8 KiB overlay window.**
-> It is linked for `code+bss ≤ 8192 B` and declares **`api_min = 4`** (the 8K fork's API level:
-> upstream level 3 plus `uid_get` at offset 396). The loader refuses it on other firmware
-> (`APP_ERR_ABI`) instead of crashing, and on the stock 4 KiB firmware its `.bss` would overrun
-> the stock workspace anyway. Get the firmware here:
-> **[busybin/uv-k1-k5v3-firmware-f4hwn-8k](https://github.com/busybin/uv-k1-k5v3-firmware-f4hwn-8k)**
-> (on-screen version `F4HWN v6.3.0+8K`).
+## Install — two steps, one page
+
+Install everything from the 8K flasher page. Nothing to download here.
+
+### 👉 https://busybin.github.io/uvstudio-8k-flasher/
+
+Desktop Chrome / Edge / Opera (Web Serial), radio plugged into that computer.
+
+1. **Flash the 8K firmware** — *Flash Firmware* → **F4HWN Labs (8K fork) → v6.3.0+8K** →
+   radio in **DFU mode** → *Flash firmware*.
+2. **Install this App** — *Apps* → *Application* **SECMSG** → *Target slot* → *Install app*.
+
+Then on the radio: **Apps menu → SECMSG**, press `F+0` and enter the **same 8-digit PIN on both
+radios**. Both radios also need the same channel and offset setting.
+
+> **The App needs the 8K firmware** (radio shows `F4HWN v6.3.0+8K`). It is linked for the 8 KiB
+> overlay window and declares `api_min = 4`, so the stock 4 KiB firmware refuses the package
+> (`APP_ERR_ABI`) instead of crashing. Coming from stock firmware, install every App again after
+> step 1 — the slot layout changes.
+>
+> Raw package only if you prefer downloading it: `SECMSG-V26.app.zip` on the
+> [latest release](https://github.com/busybin/F4HWN-Encrypted-Messenger-App/releases/latest).
 
 ## ⚖️ Legal notice — read before use
 
@@ -56,8 +71,7 @@ This is a hobby implementation, not a vetted cryptosystem:
 - **PIN panel** (`F+0` or `MENU`), background key derivation with `LOADING NN%` progress,
   input is locked while the key schedule is being computed.
 - **Message box** — received bold, sent normal with `TX ` prefix, 16-char wrapping,
-  **43 messages of history** (needs the 8 KiB window; 1-pixel-per-row scroll indicator was
-  dropped in favour of history depth), input row shows remaining characters.
+  **43 messages of history** (needs the 8 KiB window), input row shows remaining characters.
 - **Prosigns** — `F` latch + digit inserts a prosign (same set as the CW App). Defaults:
 
   | `F+1` | `F+2` | `F+3` | `F+4` | `F+5` | `F+6` | `F+7` | `F+8` | `F+9` |
@@ -82,18 +96,6 @@ This is a hobby implementation, not a vetted cryptosystem:
 | `*` | space (message / ID input); **clears the whole PIN entry** in the PIN panel |
 | `F` short | latch — `F+0` opens the PIN panel |
 | `F` double | clear compose buffer + message box |
-
-## Install
-
-1. Flash the **8K firmware** (link above).
-2. Nothing to download if you use the flasher page below; otherwise run `./build.sh`
-   (see _Building_) or take the prebuilt package from the
-   [latest release](https://github.com/busybin/F4HWN-Encrypted-Messenger-App/releases/latest).
-3. Install with [UVStudio](https://armel.github.io/uvstudio/) (or a local mirror) into any App
-   slot — e.g. slot 2.
-4. Radio → Apps menu → **SECMSG**, then `F+0` and enter an 8-digit PIN on both radios.
-
-Both radios need the same channel, the same offset setting and the same PIN.
 
 ## How to use
 
@@ -151,4 +153,3 @@ for the sanitizer run used during development.
 
 Apache-2.0 (see [LICENSE](LICENSE)). The App uses the overlay-App platform of the F4HWN
 firmware (Apache-2.0) — see [NOTICE.md](NOTICE.md). The App itself is an original work.
-
