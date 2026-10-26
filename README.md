@@ -8,6 +8,9 @@ Short encrypted messages over the **Quansheng UV-K1 / UV-K5 V3 (PY32F071)** BK48
 keyed by an 8-digit PIN, with delivery receipts and a 43-message history — on F4HWN firmware
 **with the 8 KiB overlay window**.
 
+Unofficial third-party App: not affiliated with, endorsed by, or supported by the F4HWN
+firmware project (Armel Fauveau), Quansheng, or the upstream firmware authors.
+
 ![SECMSG running on the radio — deriving the session key (LOADING)](screenshots/secmsg.png)
 
 ## Install — two steps, one page
